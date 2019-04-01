@@ -1,0 +1,12 @@
+//A simple query to look for high volume TCP/UDP connections against a given RemoteIP, per ComputerName, Process and finally RemotePort
+// Please note that information in MDATP Advanced Hunting is limited to important ports and specific technics
+
+NetworkCommunicationEvents
+//Replace the below values to match the subnets you want to monitor
+| where EventTime > ago(1d) and RemoteIP startswith "172.16" or RemoteIP startswith "192.168" 
+| summarize
+    by ComputerName, RemoteIP, RemotePort, InitiatingProcessFileName
+| summarize RemotePortCount=dcount(RemotePort) by ComputerName, RemoteIP, InitiatingProcessFileName
+
+//Please adapt the below value according to your threshold
+| where RemotePortCount > 10
